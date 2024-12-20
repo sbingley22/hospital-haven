@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react"
 import glbJill from "../../assets/Jill Logan.glb?url"
-import glbZombie from "../../assets/Zombie Fem.glb?url"
+import glbZombieF from "../../assets/Zombie Fem.glb?url"
+import glbZombieM from "../../assets/Zombie Male.glb?url"
 import { useSkinnedMeshClone } from "./SkinnedMeshClone.js"
 import { useAnimations } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
@@ -8,7 +9,8 @@ import { MeshBasicMaterial, Color } from "three"
 
 const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier={current:1}, forceAnim={current:false} }) => {
   let glb = glbJill
-  if (model === "Zombie") glb = glbZombie
+  if (model === "Zombie F") glb = glbZombieF
+  else if (model === "Zombie M") glb = glbZombieM
   const { scene, nodes, animations } = useSkinnedMeshClone(glb)
   const { mixer, actions } = useAnimations(animations, scene)
   const lastAnim = useRef(anim.current)
@@ -42,7 +44,7 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
     const oneShotAnims = ["Pistol Fire"]
     oneShotAnims.forEach(osa => {
       if (!actions[osa]) {
-        console.log("No such action: ", osa)
+        // console.log("No such action: ", osa)
         return
       }
       actions[osa].clampWhenFinished = true
@@ -80,7 +82,7 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
       forceAnim.current = false
     }
     else if (anim.current === lastAnim.current) return
-    if (!actions[anim.current]) console.log("Couldnt find animation", anim.current, lastAnim.current)
+    // if (!actions[anim.current]) console.log("Couldnt find animation", anim.current, lastAnim.current)
 
     const fadeTime = 0.1
     actions[lastAnim.current].fadeOut(fadeTime)

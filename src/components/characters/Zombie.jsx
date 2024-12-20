@@ -40,7 +40,7 @@ const Zombie = ({ id, type, position=[0,0,0] }) => {
       flagDmg={null}
     >
       <CharacterModel
-        model="Zombie"
+        model={type}
         anim={anim}
         transition={transition}
         speedMultiplier={speedMultiplier}

@@ -18,7 +18,7 @@ const Player = () => {
   })
   const { camera } = useThree()
 
-  const baseSpeed = 4.0
+  const baseSpeed = 1.8
 
   useFrame((state, delta) => {
     if (!group.current) return

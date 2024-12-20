@@ -44,9 +44,31 @@ export const updateCamera = (group, camera) => {
   const focalpoint = vec3a.copy(group.current.position)
   const zoom = 1
 
-  camera.position.x = focalpoint.x
-  camera.position.y = focalpoint.y + camYOffset + zoom
-  camera.position.z = focalpoint.z + camZOffset + zoom
+  let x = focalpoint.x
+  let y = focalpoint.y + camYOffset + zoom
+  let z = focalpoint.z + camZOffset + zoom
+  if (focalpoint.x > 1) {
+    x = 1
+  }
+  else if (focalpoint.x < -1) {
+    x = -1
+  }
+  if (focalpoint.z > 5) {
+    y = 0 + camYOffset + zoom
+    z = 5 + camZOffset + zoom
+  }
+  else if (focalpoint.z < -2) {
+    y = 0 + camYOffset + zoom
+    z = -2 + camZOffset + zoom
+  }
+
+  // camera.position.x = focalpoint.x
+  // camera.position.y = focalpoint.y + camYOffset + zoom
+  // camera.position.z = focalpoint.z + camZOffset + zoom
+
+  camera.position.x = x
+  camera.position.y = y
+  camera.position.z = z
 }
 
 
@@ -113,6 +135,13 @@ export const playerMovement = (group, inputs, anim, transition, options, baseSpe
     }
   }
 
+  // console.log(targetPosition.length())
+  // if (targetPosition.length() > 5.9) return
+  if (targetPosition.x > 5.5) targetPosition.x = 5.5
+  else if (targetPosition.x < -5.5) targetPosition.x = -5.5
+  if (targetPosition.z > 6.5) targetPosition.z = 6.5
+  else if (targetPosition.z < -6.5) targetPosition.z = -6.5
+
   group.current.position.x = targetPosition.x
   group.current.position.y = targetPosition.y
   group.current.position.z = targetPosition.z
@@ -128,7 +157,7 @@ export const playerAttack = (group, anim, inputs) => {
 
   if (!isUnskippableAnimation(anim)) {
     // start attack 
-    console.log("attacking")
+    // console.log("attacking")
     anim.current = "Pistol Fire"
   }
 }
@@ -180,8 +209,8 @@ export const zombieFlags = (group, anim, forceAnim) => {
       let dmg = flag.damage
 
       group.current.health -= dmg
-      if (anim.current === "cqc dmg") forceAnim.current = true
-      anim.current = "cqc dmg"
+      if (anim.current === "dmg") forceAnim.current = true
+      anim.current = "dmg"
     }
 
     group.current.flagDmg = null
