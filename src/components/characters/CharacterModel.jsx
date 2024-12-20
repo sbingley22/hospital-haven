@@ -7,17 +7,18 @@ import { useAnimations } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { MeshBasicMaterial, Color } from "three"
 
-const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier={current:1}, forceAnim={current:false} }) => {
+const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier={current:1}, forceAnim={current:false}, brightness={current:1.0} }) => {
   let glb = glbJill
   if (model === "Zombie F") glb = glbZombieF
   else if (model === "Zombie M") glb = glbZombieM
   const { scene, nodes, animations } = useSkinnedMeshClone(glb)
   const { mixer, actions } = useAnimations(animations, scene)
   const lastAnim = useRef(anim.current)
+  const lastBrightness = useRef(1.0)
   
   // Initial Setup
   useEffect(()=>{
-    console.log(nodes, actions)
+    // console.log(nodes, actions)
 
     // Replace all materials with MeshBasicMaterial, preserving textures
     scene.traverse((object) => {
@@ -95,9 +96,22 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
     lastAnim.current = anim.current
   }
 
+  const updateBrightness = () => {
+    if (brightness.current === lastBrightness.current) return
+    scene.traverse((object) => {
+      if (object.isMesh || object.isSkinnedMesh) {
+        object.material.color.r = brightness.current
+        object.material.color.g = brightness.current
+        object.material.color.b = brightness.current
+      }
+    });
+    lastBrightness.current = brightness.current
+  }
+
   // Game Loop
   useFrame((state, delta) => {
     updateAnimations()
+    updateBrightness()
   })
 
   return (

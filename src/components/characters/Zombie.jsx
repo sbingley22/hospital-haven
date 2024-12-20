@@ -4,6 +4,8 @@ import CharacterModel from "./CharacterModel.jsx"
 import { useGameStore } from "../../useGameStore.js"
 import { zombieAi, zombieFlags } from "../../gameHelper.js"
 
+let inZone = false
+
 const Zombie = ({ id, type, position=[0,0,0] }) => {
   const { options, getVolume, getMute, getGamepad, player } = useGameStore()
   const group = useRef()
@@ -14,6 +16,7 @@ const Zombie = ({ id, type, position=[0,0,0] }) => {
   const { camera } = useThree()
 
   const baseSpeed = 4.0
+  const brightness = useRef(0.1)
 
   useFrame((state, delta) => {
     if (!group.current) return
@@ -27,17 +30,24 @@ const Zombie = ({ id, type, position=[0,0,0] }) => {
       })
     }
 
-    zombieAi(group, anim)
+    //In Zone?
+    if (!group.current.flagInZone && group.current.position.length() < 7) {
+      brightness.current = 1.0
+      group.current.flagInZone = true
+    }
+
+    zombieAi(group, anim, player)
 
   })
 
   return (
     <group
       ref={group}
-      name="Zombie"
+      name={type}
       position={position}
       health={100}
       flagDmg={null}
+      flagInZone={false}
     >
       <CharacterModel
         model={type}
@@ -45,6 +55,7 @@ const Zombie = ({ id, type, position=[0,0,0] }) => {
         transition={transition}
         speedMultiplier={speedMultiplier}
         forceAnim={forceAnim}
+        brightness={brightness}
       />
     </group>
   )

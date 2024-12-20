@@ -57,9 +57,9 @@ export const updateCamera = (group, camera) => {
     y = 0 + camYOffset + zoom
     z = 5 + camZOffset + zoom
   }
-  else if (focalpoint.z < -2) {
+  else if (focalpoint.z < -1) {
     y = 0 + camYOffset + zoom
-    z = -2 + camZOffset + zoom
+    z = -1 + camZOffset + zoom
   }
 
   // camera.position.x = focalpoint.x
@@ -147,7 +147,24 @@ export const playerMovement = (group, inputs, anim, transition, options, baseSpe
   group.current.position.z = targetPosition.z
 }
 
-export const playerAttack = (group, anim, inputs) => {
+const findNearestEnemy = (origin, enemyGroup) => {
+  if (!enemyGroup || !enemyGroup.current) return null
+
+  let dist = 1000
+  let closest = -1
+  enemyGroup.current.children.forEach((en, index) => {
+    const distance = origin.distanceTo(en.position)
+    if (distance < dist) {
+      dist = distance
+      closest = index
+    }
+  })
+
+  if (closest === -1) return null
+  return enemyGroup.current.children[closest]
+}
+
+export const playerAttack = (group, anim, inputs, enemyGroup) => {
   if (!group) return
   if (!group.current) return
   if (!inputs.keyboard) return
@@ -157,8 +174,17 @@ export const playerAttack = (group, anim, inputs) => {
 
   if (!isUnskippableAnimation(anim)) {
     // start attack 
-    // console.log("attacking")
     anim.current = "Pistol Fire"
+
+    // shoot nearest enemy
+    const nearestEnemy = findNearestEnemy(group.current.position, enemyGroup)
+    // console.log(nearestEnemy)
+    if (nearestEnemy.flagInZone) {
+      const dx = nearestEnemy.position.x - group.current.position.x
+      const dy = nearestEnemy.position.z - group.current.position.z
+      rotateToVec(group.current, dx, dy, 1.0)
+
+    }
   }
 }
 
@@ -188,10 +214,42 @@ export const playerFlags = (group, anim, forceAnim) => {
   return updateStatus
 }
 
-export const zombieAi = (group, anim) => {
-  if (!group) return
-  if (!group.current) return
-}
+export const zombieAi = (group, anim, player) => {
+  if (!group || !group.current || !player || !player.current) return;
+
+  const zombie = group.current;
+  const playerPos = player.current.position;
+  const zombiePos = zombie.position;
+
+  // Calculate direction vector from zombie to player
+  const direction = vec3a.subVectors(playerPos, zombiePos).normalize();
+  
+  // Calculate distance to the player
+  const distance = zombiePos.distanceTo(playerPos);
+
+  if (distance > 0.8) {
+    // Move towards the player
+    const moveSpeed = 0.02; // Adjust as needed for zombie movement speed
+    zombie.position.x += direction.x * moveSpeed;
+    zombie.position.z += direction.z * moveSpeed;
+
+    // Rotate to face the player
+    const angle = Math.atan2(direction.x, direction.z);
+    const targetQuaternion = quat.setFromAxisAngle(vec3b.set(0, 1, 0), angle);
+    zombie.quaternion.slerp(targetQuaternion, 0.1); // Adjust rotation speed as needed
+
+    // Play walking animation if not already playing
+    if (anim.current !== "Staggering") {
+      anim.current = "Staggering";
+    }
+  } else {
+    // Stop and play attack animation
+    if (anim.current !== "Attack Swipe") {
+      anim.current = "Attack Swipe";
+    }
+  }
+};
+
 
 export const zombieFlags = (group, anim, forceAnim) => {
   if (!group) return

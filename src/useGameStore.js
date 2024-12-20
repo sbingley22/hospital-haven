@@ -61,6 +61,7 @@ export const useGameStore = create((set, get) => ({
     })
     set({ enemies: tempE })
   },
+
   score: 0,
   setScore: (score) => set({ score }),
   addScore: (amount) => {

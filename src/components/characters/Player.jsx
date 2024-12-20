@@ -6,7 +6,7 @@ import { playerMovement, updateCamera, updateHeldInputs, playerAttack, playerFla
 import { useKeyboardControls } from "@react-three/drei"
 
 const Player = () => {
-  const { setMode, options, getVolume, getMute, getGamepad, player, setPlayer, setHudInfoParameter } = useGameStore()
+  const { setMode, options, getVolume, getMute, getGamepad, player, setPlayer, setHudInfoParameter, enemyGroup } = useGameStore()
   const group = useRef()
   const anim = useRef("Idle")
   const transition = useRef("Idle")
@@ -40,7 +40,7 @@ const Player = () => {
       })
     }
 
-    playerAttack(group, anim, inputs)
+    playerAttack(group, anim, inputs, enemyGroup)
 
     playerMovement(group, inputs, anim, transition, options, baseSpeed, speedMultiplier, delta )
 
