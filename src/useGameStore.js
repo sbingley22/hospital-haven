@@ -16,6 +16,7 @@ export const useGameStore = create((set, get) => ({
     volume: 0.5,
     mute: false,
     useController: true,
+    resolution: 1.0,
   },
   setOptions: (newOptions) => set((state) => ({
     options: { ...state.options, ...newOptions },
@@ -79,6 +80,11 @@ export const useGameStore = create((set, get) => ({
   setHudInfoParameter: (newParameter) => set((state) => ({
     hudInfo: { ...state.hudInfo, ...newParameter },
   })),
+
+  paused: false,
+  setPaused: (paused) => set({ paused }),
+  patientHud: false,
+  setPatientHud: (patientHud) => set({ patientHud }),
 
   resetGame: () => {
     set({

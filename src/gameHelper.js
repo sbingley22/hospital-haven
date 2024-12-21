@@ -10,6 +10,7 @@ export const isUnskippableAnimation = (anim) => {
 
   const a = anim.current
   if (a === "Pistol Fire") return true
+  if (a === "Pistol Fire Alt") return true
   if (a === "Take Damage") return true
   if (a === "Die") return true
 
@@ -22,6 +23,16 @@ export const playAudio = (src, volume=1, mute=false) => {
   audio.volume = volume
   audio.play()
 }
+
+export const findChildByName = (parent, name) => {
+  if (parent.name === name) return parent;
+  if (!parent.children || parent.children.length === 0) return null;
+  for (const child of parent.children) {
+    const result = findChildByName(child, name);
+    if (result) return result;
+  }
+  return null;
+};
 
 export const rotateToVec = (group, dx, dy, rotSpeed=0.1) => {
   if (!group) return
@@ -49,19 +60,19 @@ export const updateCamera = (group, camera) => {
   let x = focalpoint.x
   let y = focalpoint.y + camYOffset + zoom
   let z = focalpoint.z + camZOffset + zoom
-  if (focalpoint.x > 1) {
-    x = 1
+  if (focalpoint.x > 2) {
+    x = 2
   }
-  else if (focalpoint.x < -1) {
-    x = -1
+  else if (focalpoint.x < -2) {
+    x = -2
   }
-  if (focalpoint.z > 5) {
+  if (focalpoint.z > 4.5) {
     y = 0 + camYOffset + zoom
-    z = 5 + camZOffset + zoom
+    z = 4.5 + camZOffset + zoom
   }
-  else if (focalpoint.z < -1) {
+  else if (focalpoint.z < -0) {
     y = 0 + camYOffset + zoom
-    z = -1 + camZOffset + zoom
+    z = -0 + camZOffset + zoom
   }
 
   // camera.position.x = focalpoint.x
@@ -73,9 +84,35 @@ export const updateCamera = (group, camera) => {
   camera.position.z = z
 }
 
+export const inArenaZone = (group) => {
+  if (!group || !group.current) return false
+
+  const x = group.current.position.x
+  const z = group.current.position.z
+
+  if (x < 6 && x > -7) {
+    if (z < 7 && z > -7) {
+      return true
+    }
+  }
+  return false
+}
 
 // ---------------------------------------------------------------------
 // Player Functions
+
+export const playerInteract = (group, inputs) => {
+  if (!group) return
+  if (!group.current) return
+  if (!inputs.keyboard) return
+
+  if (!inputs.keyboard.interact && !inputs.gamepad.interact) return
+  if (inputs.heldInputs.interact) return
+
+  vec3a.set(5,0,0)
+  if (group.current.position.distanceTo(vec3a) < 0.5) return "showPatientHud"
+  return null
+}
 
 export const updateHeldInputs = (heldInputs, inputs) => {
   Object.keys(heldInputs.current).forEach((inputName) => {
@@ -116,6 +153,7 @@ export const playerMovement = (group, inputs, anim, transition, options, baseSpe
   let speed = moveSpeed * delta
   let movementAnim = "Walking B"
   if (anim.current === "Pistol Fire") speed *= 0.0
+  if (anim.current === "Pistol Fire Alt") speed *= 0.0
   if (moveSpeed > 4) movementAnim = "Jogging"
 
   // move
@@ -123,7 +161,7 @@ export const playerMovement = (group, inputs, anim, transition, options, baseSpe
 
   if (dx || dy) {
     // moving
-    if (!["Pistol Fire"].includes(anim.current)) {
+    if (!["Pistol Fire", "Pistol Fire Alt"].includes(anim.current)) {
       rotateToVec(group.current, dx, dy)
     }
 
@@ -140,10 +178,8 @@ export const playerMovement = (group, inputs, anim, transition, options, baseSpe
     }
   }
 
-  // console.log(targetPosition.length())
-  // if (targetPosition.length() > 5.9) return
-  if (targetPosition.x > 5.5) targetPosition.x = 5.5
-  else if (targetPosition.x < -5.5) targetPosition.x = -5.5
+  if (targetPosition.x > 5.2) targetPosition.x = 5.2
+  else if (targetPosition.x < -6.5) targetPosition.x = -6.5
   if (targetPosition.z > 6.5) targetPosition.z = 6.5
   else if (targetPosition.z < -6.5) targetPosition.z = -6.5
 
@@ -172,7 +208,7 @@ const findNearestEnemy = (origin, enemyGroup) => {
   return enemyGroup.current.children[closest]
 }
 
-export const playerAttack = (group, anim, inputs, enemyGroup) => {
+export const playerAttack = (group, anim, inputs, enemyGroup, gunShine) => {
   if (!group) return
   if (!group.current) return
   if (!inputs.keyboard) return
@@ -182,17 +218,25 @@ export const playerAttack = (group, anim, inputs, enemyGroup) => {
 
   if (!isUnskippableAnimation(anim)) {
     // start attack 
-    anim.current = "Pistol Fire"
+    let dmg = 25
+    let animation = "Pistol Fire"
+    if (gunShine.current > 0) {
+      dmg = 50
+      animation = "Pistol Fire Alt"
+    }
+    anim.current = animation
 
     // shoot nearest enemy
     const nearestEnemy = findNearestEnemy(group.current.position, enemyGroup)
+    if (!nearestEnemy) return
+
     // console.log(nearestEnemy)
     if (nearestEnemy.flagInZone) {
       const dx = nearestEnemy.position.x - group.current.position.x
       const dy = nearestEnemy.position.z - group.current.position.z
       rotateToVec(group.current, dx, dy, 1.0)
 
-      nearestEnemy.flagDmg = {damage: 25}
+      nearestEnemy.flagDmg = {damage: dmg}
     }
   }
 }

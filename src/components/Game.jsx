@@ -1,5 +1,5 @@
 import GameScene from './GameScene.jsx'
-import Hud from './Hud.jsx'
+import Hud from './huds/Hud.jsx'
 
 function Game() {
 

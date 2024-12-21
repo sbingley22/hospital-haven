@@ -28,7 +28,6 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
         object.material = new MeshBasicMaterial({
           map: originalMaterial.map, // Use the texture map from the original material
           color: originalMaterial.color, // Preserve the color if needed
-          // color: new Color(1.9, 1.9, 1.9), // RGB multiplier > 1 for brightness boost
         });
       }
     });
@@ -43,7 +42,7 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
   useEffect(()=>{
     if (!mixer) return
 
-    const oneShotAnims = ["Pistol Fire", "Take Damage", "Die"]
+    const oneShotAnims = ["Pistol Fire", "Pistol Fire Alt", "Take Damage", "Die"]
     oneShotAnims.forEach(osa => {
       if (!actions[osa]) {
         // console.log("No such action: ", osa)
@@ -59,11 +58,12 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
       if (anim.current === "dead") return
       if (anim.current === "Die") return
 
-      if (action === "cqc dmg") {
+      if (action === "Take Damage") {
         if (transition.current) anim.current = transition.current
         return
       }
 
+      if (transition.current) anim.current = transition.current
       anim.current = "Idle"
     })
 
@@ -102,9 +102,7 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
     if (brightness.current === lastBrightness.current) return
     scene.traverse((object) => {
       if (object.isMesh || object.isSkinnedMesh) {
-        object.material.color.r = brightness.current
-        object.material.color.g = brightness.current
-        object.material.color.b = brightness.current
+        object.material.color.setRGB(brightness.current, brightness.current, brightness.current)
       }
     });
     lastBrightness.current = brightness.current

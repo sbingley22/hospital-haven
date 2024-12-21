@@ -2,11 +2,11 @@ import { useRef } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
 import CharacterModel from "./CharacterModel.jsx"
 import { useGameStore } from "../../useGameStore.js"
-import { playerMovement, updateCamera, updateHeldInputs, playerAttack, playerFlags } from "../../gameHelper.js"
+import { playerInteract, playerMovement, updateCamera, updateHeldInputs, playerAttack, playerFlags, findChildByName } from "../../gameHelper.js"
 import { useKeyboardControls } from "@react-three/drei"
 
 const Player = () => {
-  const { setMode, options, getVolume, getMute, getGamepad, player, setPlayer, setHudInfoParameter, enemyGroup } = useGameStore()
+  const { setMode, options, getVolume, getMute, getGamepad, player, setPlayer, setHudInfoParameter, enemyGroup, paused, setPaused, patientHud, setPatientHud } = useGameStore()
   const group = useRef()
   const anim = useRef("Idle")
   const transition = useRef("Idle")
@@ -19,6 +19,9 @@ const Player = () => {
   const { camera } = useThree()
 
   const baseSpeed = 1.8
+  const gunShine = useRef(-1.0)
+  const beltRef = useRef()
+  const gunRef = useRef()
 
   useFrame((state, delta) => {
     if (!group.current) return
@@ -40,7 +43,28 @@ const Player = () => {
       })
     }
 
-    playerAttack(group, anim, inputs, enemyGroup)
+    gunShine.current += delta
+    if (gunShine.current >= 0.4) {
+      gunShine.current = -0.8
+      // gun shine
+      if (gunRef && gunRef.current) gunRef.current.material.color.setRGB(0.1, 0.1, 0.1)
+      else gunRef.current = findChildByName(group.current, "Pistol") 
+      // belt shine
+      if (beltRef && beltRef.current) beltRef.current.material.color.setRGB(0.1, 0.07, 0.07)
+      else beltRef.current = findChildByName(group.current, "Belt") 
+    }
+    if (gunShine.current >= 0.0) {
+      if (gunRef && gunRef.current) gunRef.current.material.color.setRGB(0.0, 0.2, 0.0);
+      if (beltRef && beltRef.current) beltRef.current.material.color.setRGB(0.0, 0.2, 0.0);
+    }
+
+    const interaction = playerInteract(group, inputs)
+    if (interaction === "showPatientHud") {
+      setPaused(true)
+      setPatientHud(true)
+    }
+
+    playerAttack(group, anim, inputs, enemyGroup, gunShine)
 
     playerMovement(group, inputs, anim, transition, options, baseSpeed, speedMultiplier, delta )
 

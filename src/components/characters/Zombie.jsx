@@ -2,12 +2,12 @@ import { useRef } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
 import CharacterModel from "./CharacterModel.jsx"
 import { useGameStore } from "../../useGameStore.js"
-import { zombieAi, zombieFlags } from "../../gameHelper.js"
+import { inArenaZone, zombieAi, zombieFlags } from "../../gameHelper.js"
 
 let inZone = false
 
 const Zombie = ({ id, type, position=[0,0,0] }) => {
-  const { options, getVolume, getMute, getGamepad, player } = useGameStore()
+  const { options, getVolume, getMute, getGamepad, player, enemiesRemove, addScore } = useGameStore()
   const group = useRef()
   const anim = useRef("Staggering")
   const transition = useRef("Staggering")
@@ -31,13 +31,17 @@ const Zombie = ({ id, type, position=[0,0,0] }) => {
             anim.current = "Die"
             group.current.health = -200
             brightness.current = 0.6
+            setTimeout(()=>{
+              enemiesRemove(id)
+              addScore(10)
+            }, 1200)
           }
         }
       })
     }
 
     //In Zone?
-    if (!group.current.flagInZone && group.current.position.length() < 7) {
+    if (!group.current.flagInZone && inArenaZone(group)) {
       brightness.current = 1.0
       group.current.flagInZone = true
     }
