@@ -15,18 +15,24 @@ const Zombie = ({ id, type, position=[0,0,0] }) => {
   const speedMultiplier = useRef(1.0)
   const { camera } = useThree()
 
-  const baseSpeed = 4.0
+  const baseSpeed = 1.0
   const brightness = useRef(0.1)
 
   useFrame((state, delta) => {
     if (!group.current) return
     // if (!player) setPlayer(group)
-    if (group.current.health <= 0) return
+    if (group.current.health <= -100) return
 
     const flagStatus = zombieFlags(group, anim, forceAnim)
     if (flagStatus && flagStatus.length > 0) {
       flagStatus.forEach(status => {
-        //do flag
+        if (status === "health") {
+          if (group.current.health <= 0) {
+            anim.current = "Die"
+            group.current.health = -200
+            brightness.current = 0.6
+          }
+        }
       })
     }
 
@@ -36,7 +42,8 @@ const Zombie = ({ id, type, position=[0,0,0] }) => {
       group.current.flagInZone = true
     }
 
-    zombieAi(group, anim, player)
+    const speed = baseSpeed * speedMultiplier.current * delta
+    zombieAi(group, anim, player, speed)
 
   })
 

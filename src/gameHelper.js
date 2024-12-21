@@ -10,6 +10,8 @@ export const isUnskippableAnimation = (anim) => {
 
   const a = anim.current
   if (a === "Pistol Fire") return true
+  if (a === "Take Damage") return true
+  if (a === "Die") return true
 
   return false
 }
@@ -84,7 +86,7 @@ export const updateHeldInputs = (heldInputs, inputs) => {
 
 export const playerMovement = (group, inputs, anim, transition, options, baseSpeed, speedMultiplier, delta ) => {
   if (!group.current) return
-  transition.current = "Idle"
+  transition.current = "Idle B"
 
   let dx = 0
   let dy = 0
@@ -113,6 +115,7 @@ export const playerMovement = (group, inputs, anim, transition, options, baseSpe
   const moveSpeed = baseSpeed * speedMultiplier.current
   let speed = moveSpeed * delta
   let movementAnim = "Walking B"
+  if (anim.current === "Pistol Fire") speed *= 0.0
   if (moveSpeed > 4) movementAnim = "Jogging"
 
   // move
@@ -120,7 +123,9 @@ export const playerMovement = (group, inputs, anim, transition, options, baseSpe
 
   if (dx || dy) {
     // moving
-    rotateToVec(group.current, dx, dy)
+    if (!["Pistol Fire"].includes(anim.current)) {
+      rotateToVec(group.current, dx, dy)
+    }
 
     transition.current = movementAnim
     if (!isUnskippableAnimation(anim)) {
@@ -153,6 +158,9 @@ const findNearestEnemy = (origin, enemyGroup) => {
   let dist = 1000
   let closest = -1
   enemyGroup.current.children.forEach((en, index) => {
+    if (en.health <= 0) return
+    if (!en.flagInZone) return
+
     const distance = origin.distanceTo(en.position)
     if (distance < dist) {
       dist = distance
@@ -184,6 +192,7 @@ export const playerAttack = (group, anim, inputs, enemyGroup) => {
       const dy = nearestEnemy.position.z - group.current.position.z
       rotateToVec(group.current, dx, dy, 1.0)
 
+      nearestEnemy.flagDmg = {damage: 25}
     }
   }
 }
@@ -214,7 +223,7 @@ export const playerFlags = (group, anim, forceAnim) => {
   return updateStatus
 }
 
-export const zombieAi = (group, anim, player) => {
+export const zombieAi = (group, anim, player, speed) => {
   if (!group || !group.current || !player || !player.current) return;
 
   const zombie = group.current;
@@ -229,7 +238,9 @@ export const zombieAi = (group, anim, player) => {
 
   if (distance > 0.8) {
     // Move towards the player
-    const moveSpeed = 0.02; // Adjust as needed for zombie movement speed
+    let moveSpeed = speed 
+    if (anim.current === "Take Damage") moveSpeed *= 0.1
+
     zombie.position.x += direction.x * moveSpeed;
     zombie.position.z += direction.z * moveSpeed;
 
@@ -239,12 +250,12 @@ export const zombieAi = (group, anim, player) => {
     zombie.quaternion.slerp(targetQuaternion, 0.1); // Adjust rotation speed as needed
 
     // Play walking animation if not already playing
-    if (anim.current !== "Staggering") {
+    if (!isUnskippableAnimation(anim)) {
       anim.current = "Staggering";
     }
   } else {
     // Stop and play attack animation
-    if (anim.current !== "Attack Swipe") {
+    if (!isUnskippableAnimation(anim)) {
       anim.current = "Attack Swipe";
     }
   }
@@ -260,15 +271,15 @@ export const zombieFlags = (group, anim, forceAnim) => {
   // Damage Flag
   if (group.current.flagDmg) {
     const flag = group.current.flagDmg
-    const distance = 1.5
 
-    if (flag.range > distance) {
+    if (group.current.flagInZone) {
       updateStatus.push("health")
       let dmg = flag.damage
 
       group.current.health -= dmg
-      if (anim.current === "dmg") forceAnim.current = true
-      anim.current = "dmg"
+      if (anim.current === "Take Damage") forceAnim.current = true
+      anim.current = "Take Damage"
+      // console.log("Taking dmg: ", flag.damage)
     }
 
     group.current.flagDmg = null

@@ -6,6 +6,7 @@ import { useSkinnedMeshClone } from "./SkinnedMeshClone.js"
 import { useAnimations } from "@react-three/drei"
 import { useFrame } from "@react-three/fiber"
 import { MeshBasicMaterial, Color } from "three"
+import FakeShadow from "./FakeShadow.jsx"
 
 const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier={current:1}, forceAnim={current:false}, brightness={current:1.0} }) => {
   let glb = glbJill
@@ -42,7 +43,7 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
   useEffect(()=>{
     if (!mixer) return
 
-    const oneShotAnims = ["Pistol Fire"]
+    const oneShotAnims = ["Pistol Fire", "Take Damage", "Die"]
     oneShotAnims.forEach(osa => {
       if (!actions[osa]) {
         // console.log("No such action: ", osa)
@@ -56,6 +57,7 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
       const action = e.action.getClip().name
       // console.log(action)
       if (anim.current === "dead") return
+      if (anim.current === "Die") return
 
       if (action === "cqc dmg") {
         if (transition.current) anim.current = transition.current
@@ -83,7 +85,7 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
       forceAnim.current = false
     }
     else if (anim.current === lastAnim.current) return
-    // if (!actions[anim.current]) console.log("Couldnt find animation", anim.current, lastAnim.current)
+    if (!actions[anim.current]) console.log("Couldnt find animation", anim.current, lastAnim.current)
 
     const fadeTime = 0.1
     actions[lastAnim.current].fadeOut(fadeTime)
@@ -117,6 +119,7 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
   return (
     <>
       <primitive object={scene} />
+      <FakeShadow />
     </>
   )
 }
