@@ -17,9 +17,14 @@ const Hud = () => {
           Health : {hudInfo.playerHealth}
         </p>
         <p
-          className={hudInfo.playerHealth > 70 ? "text-green-500" : hudInfo.playerHealth > 30 ? "text-yellow-500" : "text-red-500"}
+          className={"text-yellow-500"}
         >
           Coin : {score}
+        </p>
+        <p
+          className={"text-green-500"}
+        >
+          {hudInfo.msg}
         </p>
       </div>
 

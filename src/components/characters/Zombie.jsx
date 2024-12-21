@@ -7,7 +7,7 @@ import { inArenaZone, zombieAi, zombieFlags } from "../../gameHelper.js"
 let inZone = false
 
 const Zombie = ({ id, type, position=[0,0,0] }) => {
-  const { options, getVolume, getMute, getGamepad, player, enemiesRemove, addScore } = useGameStore()
+  const { options, getVolume, getMute, getGamepad, player, enemiesRemove, addScore, paused } = useGameStore()
   const group = useRef()
   const anim = useRef("Staggering")
   const transition = useRef("Staggering")
@@ -22,6 +22,7 @@ const Zombie = ({ id, type, position=[0,0,0] }) => {
     if (!group.current) return
     // if (!player) setPlayer(group)
     if (group.current.health <= -100) return
+    if (paused) return
 
     const flagStatus = zombieFlags(group, anim, forceAnim)
     if (flagStatus && flagStatus.length > 0) {

@@ -22,11 +22,13 @@ const Player = () => {
   const gunShine = useRef(-1.0)
   const beltRef = useRef()
   const gunRef = useRef()
+  const lastInteraction = useRef(false)
 
   useFrame((state, delta) => {
     if (!group.current) return
     if (!player) setPlayer(group)
     if (group.current.health <= 0) return
+    if (paused) return
      
     const keyboard = getKeys()
     const gamepad = getGamepad()
@@ -59,10 +61,19 @@ const Player = () => {
     }
 
     const interaction = playerInteract(group, inputs)
-    if (interaction === "showPatientHud") {
-      setPaused(true)
-      setPatientHud(true)
+    if (interaction) {
+      lastInteraction.current = true
+      if (interaction.object === "showPatientHud") {
+        if (interaction.interacting) {
+          setPaused(true)
+          setPatientHud(true)
+        }
+        else {
+          setHudInfoParameter({msg:"View Patient"})
+        }
+      }
     }
+    else if (lastInteraction.current) setHudInfoParameter({msg:""})
 
     playerAttack(group, anim, inputs, enemyGroup, gunShine)
 

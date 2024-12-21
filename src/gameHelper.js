@@ -106,11 +106,13 @@ export const playerInteract = (group, inputs) => {
   if (!group.current) return
   if (!inputs.keyboard) return
 
-  if (!inputs.keyboard.interact && !inputs.gamepad.interact) return
-  if (inputs.heldInputs.interact) return
+  let interacting = true
+  if (!inputs.keyboard.interact && !inputs.gamepad.interact) interacting = false
+  if (inputs.heldInputs.interact) interacting = false
 
-  vec3a.set(5,0,0)
-  if (group.current.position.distanceTo(vec3a) < 0.5) return "showPatientHud"
+  // Patient
+  vec3a.set(5.2,0,5.2)
+  if (group.current.position.distanceTo(vec3a) < 0.5) return {object: "showPatientHud", interacting: interacting}
   return null
 }
 

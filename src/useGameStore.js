@@ -83,8 +83,12 @@ export const useGameStore = create((set, get) => ({
 
   paused: false,
   setPaused: (paused) => set({ paused }),
+
   patientHud: false,
   setPatientHud: (patientHud) => set({ patientHud }),
+
+  patient: null,
+  setPatient: (patient) => set({ patient }),
 
   resetGame: () => {
     set({
@@ -94,6 +98,10 @@ export const useGameStore = create((set, get) => ({
         playerHealth: 100,
         msg: "",
       },
+      paused: false,
+      patientHud: false,
+      patient: null,
     });
-  }
+  },
+
 }))

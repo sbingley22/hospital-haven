@@ -3,7 +3,7 @@ import { useGameStore } from "../../useGameStore";
 
 const PatientHud = () => {
   // const [isOpen, setIsOpen] = useState(true);
-  const { paused, setPaused, patientHud, setPatientHud } = useGameStore()
+  const { paused, setPaused, patientHud, setPatientHud, patient } = useGameStore()
 
   const closeMenu = () => {
     setPatientHud(false)
@@ -16,7 +16,7 @@ const PatientHud = () => {
       <div className="bg-white p-6 rounded-lg shadow-lg relative w-4/5 max-w-md">
         {/* Content of the HUD */}
         <h2 className="text-xl font-semibold mb-4">Patient Information</h2>
-        <p>Here is the patient information or any relevant details.</p>
+        <p>{patient && patient.status.info}</p>
         <button
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
           onClick={() => closeMenu()} // Close the HUD

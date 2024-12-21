@@ -4,9 +4,10 @@ import Player from "./characters/Player"
 import Zombie from "./characters/Zombie.jsx"
 import { v4 as uuidv4 } from 'uuid'
 import ArenaHospital from "./ArenaHospital.jsx"
+import { patients } from "../assets/Patients.js"
 
 const Arena = () => {
-  const { player, enemies, setEnemies, enemyAdd, enemyGroup, setEnemyGroup } = useGameStore()
+  const { player, enemies, setEnemies, enemyAdd, enemyGroup, setEnemyGroup, setPatient } = useGameStore()
   const enemiesGroup = useRef()
 
   useEffect(()=>{
@@ -14,6 +15,8 @@ const Arena = () => {
     enemyAdd(uuidv4(), "Zombie F", [-8, 0, -4])
     enemyAdd(uuidv4(), "Zombie M", [4, 0, 3])
 
+    const randomIndex = Math.floor(Math.random() * patients.length)
+    setPatient(patients[randomIndex])
   }, [])
 
   return (
