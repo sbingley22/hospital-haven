@@ -75,6 +75,7 @@ export const useGameStore = create((set, get) => ({
   
   hudInfo: {
     playerHealth: 100,
+    patientHealth: 40,
     msg: "",
   },
   setHudInfo: (hudInfo) => set({ hudInfo }),
@@ -115,11 +116,14 @@ export const useGameStore = create((set, get) => ({
       player: null,
       hudInfo: {
         playerHealth: 100,
+        patientHealth: 40,
         msg: "",
       },
       paused: false,
       patientHud: false,
+      dxHud: false,
       patient: null,
+      dx: dxTemplate,
     });
   },
 

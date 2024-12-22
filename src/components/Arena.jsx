@@ -5,9 +5,12 @@ import Zombie from "./characters/Zombie.jsx"
 import { v4 as uuidv4 } from 'uuid'
 import ArenaHospital from "./ArenaHospital.jsx"
 import { patients } from "../assets/Patients.js"
+import { useFrame } from "@react-three/fiber"
+
+let patientHealth = 40
 
 const Arena = () => {
-  const { player, enemies, setEnemies, enemyAdd, enemyGroup, setEnemyGroup, setPatient } = useGameStore()
+  const { enemies, enemyAdd, enemyGroup, setEnemyGroup, setPatient, setHudInfoParameter } = useGameStore()
   const enemiesGroup = useRef()
 
   useEffect(()=>{
@@ -18,6 +21,11 @@ const Arena = () => {
     const randomIndex = Math.floor(Math.random() * patients.length)
     setPatient(patients[randomIndex])
   }, [])
+
+  useFrame((state, delta) => {
+    patientHealth -= delta / 10
+    setHudInfoParameter({patientHealth: Math.ceil(patientHealth)})
+  })
 
   return (
     <>
