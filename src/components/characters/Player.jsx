@@ -6,7 +6,7 @@ import { playerInteract, playerMovement, updateCamera, updateHeldInputs, playerA
 import { useKeyboardControls } from "@react-three/drei"
 
 const Player = () => {
-  const { setMode, options, getVolume, getMute, getGamepad, player, setPlayer, setHudInfoParameter, enemyGroup, paused, setPaused, patientHud, setPatientHud } = useGameStore()
+  const { setMode, options, getVolume, getMute, getGamepad, player, setPlayer, setHudInfoParameter, enemyGroup, paused, setPaused, setPatientHud, setDxHud } = useGameStore()
   const group = useRef()
   const anim = useRef("Idle")
   const transition = useRef("Idle")
@@ -70,6 +70,15 @@ const Player = () => {
         }
         else {
           setHudInfoParameter({msg:"View Patient"})
+        }
+      }
+      else if (interaction.object === "showDxHud") {
+        if (interaction.interacting) {
+          setPaused(true)
+          setDxHud(true)
+        }
+        else {
+          setHudInfoParameter({msg:"Order Tests"})
         }
       }
     }

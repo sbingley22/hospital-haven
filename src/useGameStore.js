@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { dxTemplate } from "./assets/Diagnostics"
 
 const gamepadState = {
   moveX: 0,
@@ -63,7 +64,7 @@ export const useGameStore = create((set, get) => ({
     set({ enemies: tempE })
   },
 
-  score: 0,
+  score: 350,
   setScore: (score) => set({ score }),
   addScore: (amount) => {
     const state = get()
@@ -86,13 +87,31 @@ export const useGameStore = create((set, get) => ({
 
   patientHud: false,
   setPatientHud: (patientHud) => set({ patientHud }),
+  dxHud: false,
+  setDxHud: (dxHud) => set({ dxHud }),
 
   patient: null,
   setPatient: (patient) => set({ patient }),
 
+  dx: dxTemplate,
+  setDx: (dx) => set({ dx }),
+  setDxParameter: (newParameter) => set((state) => ({
+    dx: { ...state.dx, ...newParameter },
+  })),
+  setDxPurchased: (itemName) => set((state) => ({
+    dx: {
+      ...state.dx,
+      [itemName]: {
+        ...state.dx[itemName],
+        purchased: true,
+      },
+    },
+  })),
+  resetDx: () => set({ dx: dxTemplate }),
+
   resetGame: () => {
     set({
-      score: 0,
+      score: 50,
       player: null,
       hudInfo: {
         playerHealth: 100,

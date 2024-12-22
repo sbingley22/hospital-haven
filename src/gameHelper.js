@@ -113,6 +113,10 @@ export const playerInteract = (group, inputs) => {
   // Patient
   vec3a.set(5.2,0,5.2)
   if (group.current.position.distanceTo(vec3a) < 0.5) return {object: "showPatientHud", interacting: interacting}
+  // Diagnostic
+  vec3a.set(5.2,0,2.4)
+  if (group.current.position.distanceTo(vec3a) < 0.5) return {object: "showDxHud", interacting: interacting}
+
   return null
 }
 

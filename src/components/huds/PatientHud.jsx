@@ -1,9 +1,7 @@
-import { useState } from "react";
-import { useGameStore } from "../../useGameStore";
+import { useGameStore } from "../../useGameStore"
 
 const PatientHud = () => {
-  // const [isOpen, setIsOpen] = useState(true);
-  const { paused, setPaused, patientHud, setPatientHud, patient } = useGameStore()
+  const { setPaused, patientHud, setPatientHud, patient } = useGameStore()
 
   const closeMenu = () => {
     setPatientHud(false)

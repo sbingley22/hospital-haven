@@ -7,7 +7,7 @@ export const patients = [
     },
     tests: {
       "Bloods": "Elevated Troponin Levels",
-      "Blood Pressure Machine": "Heart Rate: 188  Systolic: 190  Diastolic: 140",
+      "Blood Pressure Machine": "Heart Rate: High  Systolic: High  Diastolic: High",
       "ECG": "Multiple STEMIs observed",
     },
   },
@@ -18,7 +18,7 @@ export const patients = [
       info: "Patient is complaining of chest pain and shortness of breathe",
     },
     tests: {
-      "Blood Pressure Machine": "Heart Rate: 188  Systolic: 190  Diastolic: 140",
+      "Blood Pressure Machine": "Heart Rate: High  Systolic: High  Diastolic: High",
       "ECG": "T-wave abnormalities observed",
       "Cardiac Stress Test": "Symptoms reproduced during exercise",
       "Coronary Angiography": "Partial obstruction in coronary arteries",
@@ -32,7 +32,7 @@ export const patients = [
     },
     tests: {
       "Bloods": "Low hemoglobin, low ferritin, and low iron levels",
-      "Blood Pressure Machine": "Heart Rate: 148  Systolic: 90  Diastolic: 60",
+      "Blood Pressure Machine": "Heart Rate: High  Systolic: Low  Diastolic: Low",
     },
   },
 ]

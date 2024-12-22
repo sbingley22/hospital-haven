@@ -1,4 +1,5 @@
 import { useGameStore } from "../../useGameStore.js"
+import DxHud from "./DxHud.jsx"
 import PatientHud from "./PatientHud.jsx"
 
 const Hud = () => {
@@ -29,6 +30,7 @@ const Hud = () => {
       </div>
 
       <PatientHud />
+      <DxHud />
     </div>
   )
 }
