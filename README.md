@@ -10,3 +10,8 @@ Targeting system assigns different buttons for different targets. Can cancel com
 
 -----------------------------------------------------------------------------------------
 git subtree push --prefix dist origin gh-pages
+
+vim vscode shortcuts:
+switch to explorer: ctrl shift e
+select between open tabs: ctrl tab
+replace all occurrences of old with new: :%s/old/new/g

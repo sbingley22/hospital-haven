@@ -2,7 +2,7 @@ import { useRef } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
 import CharacterModel from "./CharacterModel.jsx"
 import { useGameStore } from "../../useGameStore.js"
-import { inArenaZone, zombieAi, zombieFlags } from "../../gameHelper.js"
+import { inArenaZone, zombieAi, zombieFlags, playAudio } from "../../gameHelper.js"
 
 let inZone = false
 
@@ -33,9 +33,12 @@ const Zombie = ({ id, type, position=[0,0,0] }) => {
             group.current.health = -200
             brightness.current = 0.6
             setTimeout(()=>{
+              playAudio("./audio/blood-splat.wav", options.volume *0.7, options.mute)
+            }, 400)
+            setTimeout(()=>{
               enemiesRemove(id)
               addScore(10)
-            }, 1200)
+            }, 1900)
           }
         }
       })

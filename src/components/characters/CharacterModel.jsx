@@ -74,7 +74,7 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
   const getTimeScale = () => {
     let timescale = 1
 
-    if (["Walking"].includes(anim.current)) timescale *= speedMultiplier.current
+    if (["Walking", "Walking B"].includes(anim.current)) timescale *= speedMultiplier.current
   
     return timescale
   }

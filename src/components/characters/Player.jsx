@@ -11,7 +11,6 @@ const Player = () => {
   const anim = useRef("Idle")
   const transition = useRef("Idle")
   const forceAnim = useRef(false)
-  const speedMultiplier = useRef(1.0)
   const [, getKeys] = useKeyboardControls()
   const heldInputs = useRef({
     interact: false,
@@ -19,10 +18,12 @@ const Player = () => {
   const { camera } = useThree()
 
   const baseSpeed = 1.8
+  const speedMultiplier = useRef(1.1)
   const gunShine = useRef(-1.0)
   const beltRef = useRef()
   const gunRef = useRef()
   const lastInteraction = useRef(false)
+  const footstepTimer = useRef(0.0)
 
   useFrame((state, delta) => {
     if (!group.current) return
@@ -84,9 +85,9 @@ const Player = () => {
     }
     else if (lastInteraction.current) setHudInfoParameter({msg:""})
 
-    playerAttack(group, anim, inputs, enemyGroup, gunShine)
+    if (!interaction) playerAttack(group, anim, inputs, options, enemyGroup, gunShine)
 
-    playerMovement(group, inputs, anim, transition, options, baseSpeed, speedMultiplier, delta )
+    playerMovement(group, inputs, anim, transition, options, baseSpeed, speedMultiplier, delta, footstepTimer)
 
     updateCamera(group, camera)
     updateHeldInputs(heldInputs, inputs)

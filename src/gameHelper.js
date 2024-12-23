@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { oscTriangle } from 'three/webgpu'
 
 const vec3a = new THREE.Vector3()
 const vec3b = new THREE.Vector3()
@@ -127,7 +128,7 @@ export const updateHeldInputs = (heldInputs, inputs) => {
   })
 }
 
-export const playerMovement = (group, inputs, anim, transition, options, baseSpeed, speedMultiplier, delta ) => {
+export const playerMovement = (group, inputs, anim, transition, options, baseSpeed, speedMultiplier, delta, footstepTimer) => {
   if (!group.current) return
   transition.current = "Idle B"
 
@@ -169,6 +170,11 @@ export const playerMovement = (group, inputs, anim, transition, options, baseSpe
     // moving
     if (!["Pistol Fire", "Pistol Fire Alt"].includes(anim.current)) {
       rotateToVec(group.current, dx, dy)
+      footstepTimer.current += delta
+      if (footstepTimer.current > 0.604 / speedMultiplier.current) {
+        footstepTimer.current = 0
+        playAudio("./audio/footstep-concrete.wav", options.volume, options.mute)
+      }
     }
 
     transition.current = movementAnim
@@ -182,6 +188,8 @@ export const playerMovement = (group, inputs, anim, transition, options, baseSpe
     if (!isUnskippableAnimation(anim)) {
       anim.current = "Idle B"
     }
+
+    footstepTimer.current = 0.2 / speedMultiplier.current
   }
 
   if (targetPosition.x > 5.2) targetPosition.x = 5.2
@@ -192,6 +200,7 @@ export const playerMovement = (group, inputs, anim, transition, options, baseSpe
   group.current.position.x = targetPosition.x
   group.current.position.y = targetPosition.y
   group.current.position.z = targetPosition.z
+
 }
 
 const findNearestEnemy = (origin, enemyGroup) => {
@@ -214,7 +223,7 @@ const findNearestEnemy = (origin, enemyGroup) => {
   return enemyGroup.current.children[closest]
 }
 
-export const playerAttack = (group, anim, inputs, enemyGroup, gunShine) => {
+export const playerAttack = (group, anim, inputs, options, enemyGroup, gunShine) => {
   if (!group) return
   if (!group.current) return
   if (!inputs.keyboard) return
@@ -226,11 +235,15 @@ export const playerAttack = (group, anim, inputs, enemyGroup, gunShine) => {
     // start attack 
     let dmg = 25
     let animation = "Pistol Fire"
+    let audio = "./audio/gunshot_9_mm.wav"
     if (gunShine.current > 0) {
       dmg = 50
       animation = "Pistol Fire Alt"
+      audio = "./audio/gunshot_sw.wav"
     }
     anim.current = animation
+
+    playAudio(audio, options.volume * 0.1, options.mute)
 
     // shoot nearest enemy
     const nearestEnemy = findNearestEnemy(group.current.position, enemyGroup)
