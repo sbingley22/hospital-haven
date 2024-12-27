@@ -16,7 +16,7 @@ const Hud = () => {
         <p
           className={hudInfo.playerHealth > 70 ? "text-green-500" : hudInfo.playerHealth > 30 ? "text-yellow-500" : "text-red-500"}
         >
-          Health : {hudInfo.playerHealth}
+          Health: {hudInfo.playerHealth}
         </p>
         <p
           className={"text-yellow-500 pl-4 pr-4"}
@@ -24,9 +24,14 @@ const Hud = () => {
           Coin : {score}
         </p>
         <p
+          className={"text-yellow-500 pl-4 pr-4"}
+        >
+          Combo: x{hudInfo.combo}
+        </p>
+        <p
           className={hudInfo.patientHealth > 20 ? "text-green-500" : hudInfo.patientHealth > 5 ? "text-yellow-500" : "text-red-500"}
         >
-          Patient : {hudInfo.patientHealth}
+          Patient: {hudInfo.patientHealth}
         </p>
       </div>
       <div 

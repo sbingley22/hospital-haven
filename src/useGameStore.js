@@ -77,6 +77,7 @@ export const useGameStore = create((set, get) => ({
     playerHealth: 100,
     patientHealth: 40,
     msg: "",
+    combo: 0,
   },
   setHudInfo: (hudInfo) => set({ hudInfo }),
   setHudInfoParameter: (newParameter) => set((state) => ({
@@ -117,6 +118,7 @@ export const useGameStore = create((set, get) => ({
       hudInfo: {
         playerHealth: 100,
         patientHealth: 40,
+        combo: 0,
         msg: "",
       },
       paused: false,

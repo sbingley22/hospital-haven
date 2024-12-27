@@ -223,7 +223,7 @@ const findNearestEnemy = (origin, enemyGroup) => {
   return enemyGroup.current.children[closest]
 }
 
-export const playerAttack = (group, anim, inputs, options, enemyGroup, gunShine) => {
+export const playerAttack = (group, anim, inputs, options, enemyGroup, gunShine, combo) => {
   if (!group) return
   if (!group.current) return
   if (!inputs.keyboard) return
@@ -233,13 +233,15 @@ export const playerAttack = (group, anim, inputs, options, enemyGroup, gunShine)
 
   if (!isUnskippableAnimation(anim)) {
     // start attack 
-    let dmg = 25
-    let animation = "Pistol Fire"
+    let dmg = 25 + combo.current
+    let animation = "Pistol Fire Alt"
     let audio = "./audio/gunshot_9_mm.wav"
     if (gunShine.current > 0) {
-      dmg = 50
-      animation = "Pistol Fire Alt"
+      animation = "Pistol Fire"
       audio = "./audio/gunshot_sw.wav"
+    }
+    else {
+      return "miss"
     }
     anim.current = animation
 
@@ -256,8 +258,11 @@ export const playerAttack = (group, anim, inputs, options, enemyGroup, gunShine)
       rotateToVec(group.current, dx, dy, 1.0)
 
       nearestEnemy.flagDmg = {damage: dmg}
+      return ("hit")
     }
   }
+
+  return ("miss")
 }
 
 export const playerFlags = (group, anim, forceAnim) => {

@@ -2,7 +2,7 @@ import { useRef } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
 import CharacterModel from "./CharacterModel.jsx"
 import { useGameStore } from "../../useGameStore.js"
-import { playerInteract, playerMovement, updateCamera, updateHeldInputs, playerAttack, playerFlags, findChildByName } from "../../gameHelper.js"
+import { playerInteract, playerMovement, updateCamera, updateHeldInputs, playerAttack, playerFlags, findChildByName, playAudio } from "../../gameHelper.js"
 import { useKeyboardControls } from "@react-three/drei"
 
 const Player = () => {
@@ -19,11 +19,44 @@ const Player = () => {
 
   const baseSpeed = 1.8
   const speedMultiplier = useRef(1.1)
+  const combo = useRef(0)
+  const shineActive = useRef(false)
   const gunShine = useRef(-1.0)
   const beltRef = useRef()
   const gunRef = useRef()
   const lastInteraction = useRef(false)
   const footstepTimer = useRef(0.0)
+
+  const resetShine = (keepCombo=false) => {
+    if (!keepCombo) {
+      combo.current = 0
+      speedMultiplier.current = 1.0
+      setHudInfoParameter({combo: 0})
+    }
+    else {
+      setHudInfoParameter({combo: combo.current})
+    }
+
+    shineActive.current = false
+    gunShine.current = -0.8
+    // gun shine
+    if (gunRef && gunRef.current) gunRef.current.material.color.setRGB(0.1, 0.1, 0.1)
+    else gunRef.current = findChildByName(group.current, "Pistol") 
+    // belt shine
+    if (beltRef && beltRef.current) beltRef.current.material.color.setRGB(0.1, 0.07, 0.07)
+    else beltRef.current = findChildByName(group.current, "Belt") 
+  }
+
+  const shine = () => {
+    shineActive.current = true
+    let r = 0.1
+    let g = 0.0
+    let b = 0.0
+    if (gunRef && gunRef.current) gunRef.current.material.color.setRGB(r,g,b)
+    if (beltRef && beltRef.current) beltRef.current.material.color.setRGB(r,g,b)
+    
+    playAudio("./audio/gun-cocking.wav", options.volume * 0.2, options.mute)
+  }
 
   useFrame((state, delta) => {
     if (!group.current) return
@@ -47,18 +80,13 @@ const Player = () => {
     }
 
     gunShine.current += delta
-    if (gunShine.current >= 0.4) {
-      gunShine.current = -0.8
-      // gun shine
-      if (gunRef && gunRef.current) gunRef.current.material.color.setRGB(0.1, 0.1, 0.1)
-      else gunRef.current = findChildByName(group.current, "Pistol") 
-      // belt shine
-      if (beltRef && beltRef.current) beltRef.current.material.color.setRGB(0.1, 0.07, 0.07)
-      else beltRef.current = findChildByName(group.current, "Belt") 
+    let shineTime = 1.0 - (combo.current / 20)
+    if (shineTime < 0.2) shineTime = 0.2
+    if (gunShine.current >= shineTime) {
+      resetShine(true)
     }
-    if (gunShine.current >= 0.0) {
-      if (gunRef && gunRef.current) gunRef.current.material.color.setRGB(0.0, 0.2, 0.0);
-      if (beltRef && beltRef.current) beltRef.current.material.color.setRGB(0.0, 0.2, 0.0);
+    if (gunShine.current >= 0.0 && shineActive.current === false) {
+      shine()
     }
 
     const interaction = playerInteract(group, inputs)
@@ -85,7 +113,15 @@ const Player = () => {
     }
     else if (lastInteraction.current) setHudInfoParameter({msg:""})
 
-    if (!interaction) playerAttack(group, anim, inputs, options, enemyGroup, gunShine)
+    if (!interaction) {
+      const moveResult = playerAttack(group, anim, inputs, options, enemyGroup, gunShine, combo)
+      if (moveResult === "miss") resetShine()
+      else if (moveResult === "hit") {
+        combo.current++
+        speedMultiplier.current = 1.0 + (combo.current * 0.1)
+        resetShine(true)
+      }
+    }
 
     playerMovement(group, inputs, anim, transition, options, baseSpeed, speedMultiplier, delta, footstepTimer)
 
