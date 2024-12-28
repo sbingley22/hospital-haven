@@ -6,7 +6,7 @@ import { playerInteract, playerMovement, updateCamera, updateHeldInputs, playerA
 import { useKeyboardControls } from "@react-three/drei"
 
 const Player = () => {
-  const { setMode, options, getVolume, getMute, getGamepad, player, setPlayer, setHudInfoParameter, enemyGroup, paused, setPaused, setPatientHud, setDxHud } = useGameStore()
+  const { resetGame, setMode, options, getVolume, getMute, getGamepad, player, setPlayer, setHudInfoParameter, enemyGroup, paused, setPaused, setPatientHud, setDxHud } = useGameStore()
   const group = useRef()
   const anim = useRef("Idle")
   const transition = useRef("Idle")
@@ -45,6 +45,8 @@ const Player = () => {
     // belt shine
     if (beltRef && beltRef.current) beltRef.current.material.color.setRGB(0.1, 0.07, 0.07)
     else beltRef.current = findChildByName(group.current, "Belt") 
+
+    setHudInfoParameter({shine: false})
   }
 
   const shine = () => {
@@ -55,7 +57,9 @@ const Player = () => {
     if (gunRef && gunRef.current) gunRef.current.material.color.setRGB(r,g,b)
     if (beltRef && beltRef.current) beltRef.current.material.color.setRGB(r,g,b)
     
-    playAudio("./audio/gun-cocking.wav", options.volume * 0.2, options.mute)
+    playAudio("./audio/gun-cock.wav", options.volume * 0.2, options.mute)
+
+    setHudInfoParameter({shine: true})
   }
 
   useFrame((state, delta) => {
@@ -72,10 +76,17 @@ const Player = () => {
       gamepad: gamepad,
     }
 
-    const flagStatus = playerFlags(group, anim, forceAnim)
+    const flagStatus = playerFlags(group, anim, forceAnim, options)
     if (flagStatus && flagStatus.length > 0) {
       flagStatus.forEach(status => {
         if (status === "health") setHudInfoParameter({playerHealth: group.current.health})
+        if (status === "dead") {
+          setTimeout(()=>{
+            console.log("game over")
+            setMode(5)
+            resetGame()
+          }, 1000)
+        }
       })
     }
 

@@ -7,8 +7,6 @@ import ArenaHospital from "./ArenaHospital.jsx"
 import { patients } from "../assets/Patients.js"
 import { useFrame } from "@react-three/fiber"
 
-let patientHealth = 40
-
 const Arena = () => {
   const { enemies, enemyAdd, enemyGroup, setEnemyGroup, setPatient, setHudInfoParameter } = useGameStore()
   const enemiesGroup = useRef()
@@ -16,6 +14,7 @@ const Arena = () => {
   const roundNumber = useRef(0)
   const gameTimer = useRef(0.0)
   const roundTimer = useRef(0.0)
+  const patientHealth = useRef(40)
 
   const newRound = () => {
     roundNumber.current++
@@ -23,9 +22,7 @@ const Arena = () => {
 
     newPatient()
 
-    setTimeout(()=>{
-      spawnWave(3 + roundNumber.current)
-    }, 500)
+    setTimeout(()=>{spawnWave(3 + roundNumber.current)}, 1500)
 
     let waveEnd = 0
     for (let index = 1; index < 3; index++) {
@@ -85,8 +82,8 @@ const Arena = () => {
     gameTimer.current += delta
     roundTimer.current += delta
 
-    patientHealth -= delta / 5
-    setHudInfoParameter({patientHealth: Math.ceil(patientHealth)})
+    patientHealth.current -= delta / 5
+    setHudInfoParameter({patientHealth: Math.ceil(patientHealth.current)})
 
   })
 

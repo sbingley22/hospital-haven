@@ -11,7 +11,7 @@ const Hud = () => {
     >
       <div
         className="p-4 flex rounded-sm justify-between text-lg"
-        style={{backgroundColor: "rgba(0,0,0,0.7)"}}
+        style={{backgroundColor: hudInfo.shine ? "rgba(55,0,0,0.7" : "rgba(0,0,0,0.7)"}}
       >
         <p
           className={hudInfo.playerHealth > 70 ? "text-green-500" : hudInfo.playerHealth > 30 ? "text-yellow-500" : "text-red-500"}

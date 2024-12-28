@@ -10,7 +10,7 @@ const gamepadState = {
 export const useGameStore = create((set, get) => ({
   getGamepad: () => gamepadState,
 
-  mode: 0,
+  mode: 5,
   setMode: (mode) => set({ mode }),
 
   options: {
@@ -18,6 +18,7 @@ export const useGameStore = create((set, get) => ({
     mute: false,
     useController: true,
     resolution: 1.0,
+    invincible: false,
   },
   setOptions: (newOptions) => set((state) => ({
     options: { ...state.options, ...newOptions },
@@ -78,6 +79,7 @@ export const useGameStore = create((set, get) => ({
     patientHealth: 40,
     msg: "",
     combo: 0,
+    shine: false,
   },
   setHudInfo: (hudInfo) => set({ hudInfo }),
   setHudInfoParameter: (newParameter) => set((state) => ({
@@ -120,12 +122,15 @@ export const useGameStore = create((set, get) => ({
         patientHealth: 40,
         combo: 0,
         msg: "",
+        shine: false,
       },
       paused: false,
       patientHud: false,
       dxHud: false,
       patient: null,
       dx: dxTemplate,
+      enemyGroup: null,
+      enemies: [],
     });
   },
 

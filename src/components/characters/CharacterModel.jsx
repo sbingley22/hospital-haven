@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react"
+import { useRef, useEffect, act } from "react"
 import glbJill from "../../assets/Jill Logan.glb?url"
 import glbZombieF from "../../assets/Zombie Fem.glb?url"
 import glbZombieM from "../../assets/Zombie Male.glb?url"
@@ -42,7 +42,7 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
   useEffect(()=>{
     if (!mixer) return
 
-    const oneShotAnims = ["Pistol Fire", "Pistol Fire Alt", "Take Damage", "Die"]
+    const oneShotAnims = ["Pistol Fire", "Pistol Fire Alt", "Take Damage", "Die", "Attack Swipe"]
     oneShotAnims.forEach(osa => {
       if (!actions[osa]) {
         // console.log("No such action: ", osa)
@@ -61,6 +61,9 @@ const CharacterModel = ({ model="Jill", anim, transition="Idle", speedMultiplier
       if (action === "Take Damage") {
         if (transition.current) anim.current = transition.current
         return
+      }
+      if (action === "Attack Swipe") {
+        anim.current = "Idle"
       }
 
       if (transition.current) anim.current = transition.current

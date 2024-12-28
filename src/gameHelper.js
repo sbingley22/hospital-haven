@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import { oscTriangle } from 'three/webgpu'
 
 const vec3a = new THREE.Vector3()
 const vec3b = new THREE.Vector3()
@@ -14,6 +13,7 @@ export const isUnskippableAnimation = (anim) => {
   if (a === "Pistol Fire Alt") return true
   if (a === "Take Damage") return true
   if (a === "Die") return true
+  if (a === "Attack Swipe") return true
 
   return false
 }
@@ -265,14 +265,15 @@ export const playerAttack = (group, anim, inputs, options, enemyGroup, gunShine,
   return ("miss")
 }
 
-export const playerFlags = (group, anim, forceAnim) => {
+export const playerFlags = (group, anim, forceAnim, options=null) => {
   if (!group) return
   if (!group.current) return
 
   let updateStatus = []
 
   // Damage Flag
-  if (group.current.flagDmg) {
+  const invincible = options && options.invincible
+  if (group.current.flagDmg && !invincible) {
     const flag = group.current.flagDmg
     const distance = 1.5
 
@@ -281,8 +282,16 @@ export const playerFlags = (group, anim, forceAnim) => {
       let dmg = flag.damage
 
       group.current.health -= dmg
-      if (anim.current === "cqc dmg") forceAnim.current = true
-      anim.current = "cqc dmg"
+      if (group.current.health <= 0) {
+        anim.current = "Die"
+        updateStatus.push("dead")
+      }
+      else {
+        if (anim.current === "Take Damage") forceAnim.current = true
+        anim.current = "Take Damage"
+      }
+
+      playAudio("./audio/f-hurt.ogg", options.volume * 0.25, options.mute)
     }
 
     group.current.flagDmg = null
@@ -325,6 +334,10 @@ export const zombieAi = (group, anim, player, speed) => {
     // Stop and play attack animation
     if (!isUnskippableAnimation(anim)) {
       anim.current = "Attack Swipe";
+
+      setTimeout(()=>{
+        player.current.flagDmg = {damage: 25, range: 2}
+      }, 300)
     }
   }
 };
