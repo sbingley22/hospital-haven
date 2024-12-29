@@ -65,7 +65,7 @@ export const useGameStore = create((set, get) => ({
     set({ enemies: tempE })
   },
 
-  score: 96650,
+  score: 500,
   setScore: (score) => set({ score }),
   addScore: (amount) => {
     const state = get()
@@ -100,6 +100,22 @@ export const useGameStore = create((set, get) => ({
 
   patient: null,
   setPatient: (patient) => set({ patient }),
+  patientCured: null,
+  setPatientCured: (patientCured) => set({ patientCured }),
+  patientsSaved: 0,
+  setPatientsSaved: (patientsSaved) => set({ patientsSaved }),
+  addPatientsSaved: (amount) => {
+    const state = get()
+    const newSaved = state.patientsSaved + amount
+    set({ patientsSaved: newSaved })
+  },
+
+  highScore: 0,
+  setHighScore: (highScore) => set({ highScore }),
+  newHighScore: () => {
+    const state = get()
+    if (state.patientsSaved > state.highScore) set({ highScore: state.patientsSaved })
+  },
 
   dx: dxTemplate,
   setDx: (dx) => set({ dx }),
@@ -135,7 +151,7 @@ export const useGameStore = create((set, get) => ({
 
   resetGame: () => {
     set({
-      score: 150,
+      score: 500,
       player: null,
       hudInfo: {
         playerHealth: 100,
@@ -150,6 +166,8 @@ export const useGameStore = create((set, get) => ({
       bookHud: false,
       upgradeHud: false,
       patient: null,
+      patientCured: null,
+      patientsSaved: 0,
       dx: dxTemplate,
       upgrades: upgradeTemplate,
       enemyGroup: null,

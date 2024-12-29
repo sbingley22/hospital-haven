@@ -285,7 +285,7 @@ export const playerFlags = (group, anim, forceAnim, options=null, upgrades) => {
     if (flag.range > distance) {
       updateStatus.push("health")
       let dmg = flag.damage
-      if (upgrades["Armour"]) dmg /= 2
+      if (upgrades["Armour"].purchased) dmg /= 2
 
       group.current.health -= dmg
       if (group.current.health <= 0) {
@@ -342,6 +342,7 @@ export const zombieAi = (group, anim, player, speed) => {
       anim.current = "Attack Swipe";
 
       setTimeout(()=>{
+        if (!player || !player.current) return
         player.current.flagDmg = {damage: 25, range: 2}
       }, 300)
     }

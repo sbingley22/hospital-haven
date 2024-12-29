@@ -5,7 +5,7 @@ import PatientHud from "./PatientHud.jsx"
 import UpgradeHud from "./UpgradeHud.jsx"
 
 const Hud = () => {
-  const { hudInfo, score } = useGameStore()
+  const { hudInfo, score, patientsSaved } = useGameStore()
 
   return (
     <div
@@ -23,12 +23,17 @@ const Hud = () => {
         <p
           className={"text-yellow-500 pl-4 pr-4"}
         >
-          Coin : {score}
+          Coin: {score}
         </p>
         <p
           className={"text-yellow-500 pl-4 pr-4"}
         >
           Combo: x{hudInfo.combo}
+        </p>
+        <p
+          className={"text-yellow-500 pl-4 pr-4"}
+        >
+          Patients Saved: {patientsSaved}
         </p>
         <p
           className={hudInfo.patientHealth > 20 ? "text-green-500" : hudInfo.patientHealth > 5 ? "text-yellow-500" : "text-red-500"}

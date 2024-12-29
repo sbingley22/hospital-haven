@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 import { useRef } from "react"
 import { useFrame, useThree } from "@react-three/fiber"
 import CharacterModel from "./CharacterModel.jsx"
@@ -6,7 +7,7 @@ import { playerInteract, playerMovement, updateCamera, updateHeldInputs, playerA
 import { useKeyboardControls } from "@react-three/drei"
 
 const Player = () => {
-  const { resetGame, setMode, options, getVolume, getMute, getGamepad, player, setPlayer, setHudInfoParameter, enemyGroup, paused, setPaused, setPatientHud, setDxHud, setBookHud, setUpgradeHud, upgrades } = useGameStore()
+  const { resetGame, setMode, options, getGamepad, player, setPlayer, setHudInfoParameter, enemyGroup, paused, setPaused, setPatientHud, setDxHud, setBookHud, setUpgradeHud, upgrades, newHighScore } = useGameStore()
   const group = useRef()
   const anim = useRef("Idle")
   const transition = useRef("Idle")
@@ -31,7 +32,7 @@ const Player = () => {
     if (!keepCombo) {
       combo.current = 0
       speedMultiplier.current = 1.0
-      if (upgrades["Speed Boots"]) speedMultiplier.current += 0.8
+      if (upgrades["Speed Boots"].purchased) speedMultiplier.current += 0.8
       setHudInfoParameter({combo: 0})
     }
     else {
@@ -84,6 +85,7 @@ const Player = () => {
         if (status === "dead") {
           setTimeout(()=>{
             console.log("game over")
+            newHighScore()
             setMode(5)
             resetGame()
           }, 1000)

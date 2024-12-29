@@ -8,7 +8,7 @@ import { patients } from "../assets/Patients.js"
 import { useFrame } from "@react-three/fiber"
 
 const Arena = () => {
-  const { enemies, enemyAdd, enemyGroup, setEnemyGroup, setPatient, setHudInfoParameter } = useGameStore()
+  const { player, enemies, setEnemies, enemyAdd, enemyGroup, setEnemyGroup, setPatient, setHudInfoParameter, patientCured, setPatientCured, addPatientsSaved } = useGameStore()
   const enemiesGroup = useRef()
 
   const roundNumber = useRef(0)
@@ -16,11 +16,31 @@ const Arena = () => {
   const roundTimer = useRef(0.0)
   const patientHealth = useRef(40)
 
+  useEffect(()=>{
+    if (patientCured === null) return
+
+    newRound()
+
+    if (patientCured) {
+      addPatientsSaved(1) 
+    }
+    else {
+      addPatientsSaved(-1)
+      if (player.current) player.current.flagDmg = {damage: 25, range: 2}
+    }
+
+    setPatientCured(null)
+  }, [patientCured])
+
   const newRound = () => {
     roundNumber.current++
     const currentRound = roundNumber.current
 
     newPatient()
+    patientHealth.current = 40
+    roundTimer.current = 0
+
+    setEnemies([])
 
     setTimeout(()=>{spawnWave(3 + roundNumber.current)}, 1500)
 
@@ -84,6 +104,10 @@ const Arena = () => {
 
     patientHealth.current -= delta / 5
     setHudInfoParameter({patientHealth: Math.ceil(patientHealth.current)})
+    if (patientHealth.current <= 0) {
+      patientHealth.current = 40
+      setPatientCured(false)
+    }
 
   })
 
