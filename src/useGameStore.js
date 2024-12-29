@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { dxTemplate } from "./assets/Diagnostics"
+import { dxTemplate, upgradeTemplate } from "./assets/Diagnostics"
 
 const gamepadState = {
   moveX: 0,
@@ -65,7 +65,7 @@ export const useGameStore = create((set, get) => ({
     set({ enemies: tempE })
   },
 
-  score: 350,
+  score: 96650,
   setScore: (score) => set({ score }),
   addScore: (amount) => {
     const state = get()
@@ -93,6 +93,10 @@ export const useGameStore = create((set, get) => ({
   setPatientHud: (patientHud) => set({ patientHud }),
   dxHud: false,
   setDxHud: (dxHud) => set({ dxHud }),
+  bookHud: false,
+  setBookHud: (bookHud) => set({ bookHud }),
+  upgradeHud: false,
+  setUpgradeHud: (upgradeHud) => set({ upgradeHud }),
 
   patient: null,
   setPatient: (patient) => set({ patient }),
@@ -113,9 +117,25 @@ export const useGameStore = create((set, get) => ({
   })),
   resetDx: () => set({ dx: dxTemplate }),
 
+  upgrades: upgradeTemplate,
+  setUpgrades: (upgrades) => set({ upgrades }),
+  setUpgradesParameter: (newParameter) => set((state) => ({
+    upgrades: { ...state.upgrades, ...newParameter },
+  })),
+  setUpgradesPurchased: (itemName) => set((state) => ({
+    upgrades: {
+      ...state.upgrades,
+      [itemName]: {
+        ...state.upgrades[itemName],
+        purchased: true,
+      },
+    },
+  })),
+  resetUpgrades: () => set({ upgrades: upgradeTemplate}),
+
   resetGame: () => {
     set({
-      score: 50,
+      score: 150,
       player: null,
       hudInfo: {
         playerHealth: 100,
@@ -127,8 +147,11 @@ export const useGameStore = create((set, get) => ({
       paused: false,
       patientHud: false,
       dxHud: false,
+      bookHud: false,
+      upgradeHud: false,
       patient: null,
       dx: dxTemplate,
+      upgrades: upgradeTemplate,
       enemyGroup: null,
       enemies: [],
     });

@@ -117,7 +117,12 @@ export const playerInteract = (group, inputs) => {
   // Diagnostic
   vec3a.set(5.2,0,2.4)
   if (group.current.position.distanceTo(vec3a) < 0.5) return {object: "showDxHud", interacting: interacting}
-
+  // Text Book
+  vec3a.set(5.2,0,-0.1)
+  if (group.current.position.distanceTo(vec3a) < 0.5) return {object: "showBookHud", interacting: interacting}
+  // Upgrades
+  vec3a.set(5.2,0,-3.6)
+  if (group.current.position.distanceTo(vec3a) < 0.5) return {object: "showUpgradeHud", interacting: interacting}
   return null
 }
 
@@ -223,7 +228,7 @@ const findNearestEnemy = (origin, enemyGroup) => {
   return enemyGroup.current.children[closest]
 }
 
-export const playerAttack = (group, anim, inputs, options, enemyGroup, gunShine, combo) => {
+export const playerAttack = (group, anim, inputs, options, enemyGroup, gunShine, combo, upgrades) => {
   if (!group) return
   if (!group.current) return
   if (!inputs.keyboard) return
@@ -231,17 +236,17 @@ export const playerAttack = (group, anim, inputs, options, enemyGroup, gunShine,
   if (!inputs.keyboard.interact && !inputs.gamepad.interact) return
   if (inputs.heldInputs.interact) return
 
+  if (gunShine.current < 0) return "miss"
+
   if (!isUnskippableAnimation(anim)) {
     // start attack 
     let dmg = 25 + combo.current
-    let animation = "Pistol Fire Alt"
+    let animation = "Pistol Fire"
     let audio = "./audio/gunshot_9_mm.wav"
-    if (gunShine.current > 0) {
-      animation = "Pistol Fire"
+    if (upgrades["Magnum"].purchased) {
+      dmg = 75 + combo.current
+      animation = "Pistol Fire Alt"
       audio = "./audio/gunshot_sw.wav"
-    }
-    else {
-      return "miss"
     }
     anim.current = animation
 
@@ -265,7 +270,7 @@ export const playerAttack = (group, anim, inputs, options, enemyGroup, gunShine,
   return ("miss")
 }
 
-export const playerFlags = (group, anim, forceAnim, options=null) => {
+export const playerFlags = (group, anim, forceAnim, options=null, upgrades) => {
   if (!group) return
   if (!group.current) return
 
@@ -280,6 +285,7 @@ export const playerFlags = (group, anim, forceAnim, options=null) => {
     if (flag.range > distance) {
       updateStatus.push("health")
       let dmg = flag.damage
+      if (upgrades["Armour"]) dmg /= 2
 
       group.current.health -= dmg
       if (group.current.health <= 0) {

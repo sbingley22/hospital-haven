@@ -6,7 +6,8 @@ A hospital bullet haven where you must heal patients.
 Defeat enemies for coins. Spend coins on tests, hints, or upgrades. 
 Patients health slowly declines. If incorrect dx then lose health and on to next round.
 Flat lighting.
-Targeting system assigns different buttons for different targets. Can cancel combo if using different buttons.
+Gun shots must be timed to red flashes
+Combo system where each correct timing boosts the player
 
 -----------------------------------------------------------------------------------------
 git subtree push --prefix dist origin gh-pages

@@ -1,6 +1,8 @@
 import { useGameStore } from "../../useGameStore.js"
+import BookHud from "./BookHud.jsx"
 import DxHud from "./DxHud.jsx"
 import PatientHud from "./PatientHud.jsx"
+import UpgradeHud from "./UpgradeHud.jsx"
 
 const Hud = () => {
   const { hudInfo, score } = useGameStore()
@@ -47,6 +49,8 @@ const Hud = () => {
 
       <PatientHud />
       <DxHud />
+      <BookHud />
+      <UpgradeHud />
     </div>
   )
 }

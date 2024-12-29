@@ -6,7 +6,7 @@ import { playerInteract, playerMovement, updateCamera, updateHeldInputs, playerA
 import { useKeyboardControls } from "@react-three/drei"
 
 const Player = () => {
-  const { resetGame, setMode, options, getVolume, getMute, getGamepad, player, setPlayer, setHudInfoParameter, enemyGroup, paused, setPaused, setPatientHud, setDxHud } = useGameStore()
+  const { resetGame, setMode, options, getVolume, getMute, getGamepad, player, setPlayer, setHudInfoParameter, enemyGroup, paused, setPaused, setPatientHud, setDxHud, setBookHud, setUpgradeHud, upgrades } = useGameStore()
   const group = useRef()
   const anim = useRef("Idle")
   const transition = useRef("Idle")
@@ -31,6 +31,7 @@ const Player = () => {
     if (!keepCombo) {
       combo.current = 0
       speedMultiplier.current = 1.0
+      if (upgrades["Speed Boots"]) speedMultiplier.current += 0.8
       setHudInfoParameter({combo: 0})
     }
     else {
@@ -76,7 +77,7 @@ const Player = () => {
       gamepad: gamepad,
     }
 
-    const flagStatus = playerFlags(group, anim, forceAnim, options)
+    const flagStatus = playerFlags(group, anim, forceAnim, options, upgrades)
     if (flagStatus && flagStatus.length > 0) {
       flagStatus.forEach(status => {
         if (status === "health") setHudInfoParameter({playerHealth: group.current.health})
@@ -121,15 +122,34 @@ const Player = () => {
           setHudInfoParameter({msg:"Order Tests"})
         }
       }
+      else if (interaction.object === "showBookHud") {
+        if (interaction.interacting) {
+          setPaused(true)
+          setBookHud(true)
+        }
+        else {
+          setHudInfoParameter({msg:"Read Text Books"})
+        }
+      }
+      else if (interaction.object === "showUpgradeHud") {
+        if (interaction.interacting) {
+          setPaused(true)
+          setUpgradeHud(true)
+        }
+        else {
+          setHudInfoParameter({msg:"Upgrades"})
+        }
+      }
     }
     else if (lastInteraction.current) setHudInfoParameter({msg:""})
 
     if (!interaction) {
-      const moveResult = playerAttack(group, anim, inputs, options, enemyGroup, gunShine, combo)
+      const moveResult = playerAttack(group, anim, inputs, options, enemyGroup, gunShine, combo, upgrades)
       if (moveResult === "miss") resetShine()
       else if (moveResult === "hit") {
         combo.current++
-        speedMultiplier.current = 1.0 + (combo.current * 0.1)
+        // speedMultiplier.current = 1.0 + (combo.current * 0.1)
+        speedMultiplier.current += 0.1
         resetShine(true)
       }
     }

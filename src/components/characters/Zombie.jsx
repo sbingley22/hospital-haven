@@ -37,7 +37,7 @@ const Zombie = ({ id, type, position=[0,0,0] }) => {
             }, 400)
             setTimeout(()=>{
               enemiesRemove(id)
-              addScore(10)
+              addScore(100)
             }, 1900)
           }
         }
