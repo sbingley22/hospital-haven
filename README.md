@@ -9,8 +9,10 @@ Flat lighting.
 Gun shots must be timed to red flashes
 Combo system where each correct timing boosts the player
 
+![screenshot](./screenshot.png)
+
 -----------------------------------------------------------------------------------------
-git subtree push --prefix dist origin gh-pages
+
 
 vim vscode shortcuts:
 switch to explorer: ctrl shift e
